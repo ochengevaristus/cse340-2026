@@ -42,6 +42,7 @@ app.get('/', async (req, res) => {
 });
 
 // Organizations page
+
 app.get('/organizations', async (req, res) => {
     try {
         const organizations = await getAllOrganizations();
@@ -49,12 +50,14 @@ app.get('/organizations', async (req, res) => {
         console.log(organizations);
 
         const title = 'Our Partner Organizations';
-        res.render('organizations', { title });
+
+        res.render('organizations', { title, organizations });
     } catch (error) {
         console.error('Error retrieving organizations:', error);
         res.status(500).send('An error occurred while retrieving organizations.');
     }
 });
+
 
 // Projects page
 app.get('/projects', async (req, res) => {
