@@ -1,4 +1,7 @@
+import dns from 'node:dns';
 import { Pool } from 'pg';
+
+dns.setDefaultResultOrder('ipv4first');
 
 const pool = new Pool({
     connectionString: process.env.DB_URL,

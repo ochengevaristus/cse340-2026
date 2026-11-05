@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
 import { testConnection } from './src/models/db.js';
+import { getAllOrganizations } from './src/models/organizations.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -10,9 +11,11 @@ const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 // Define the port number the server will listen on
 const PORT = process.env.PORT || 3000;
 
+// Get the current file and directory paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize Express application
 const app = express();
 
 /**
@@ -32,28 +35,43 @@ app.set('views', path.join(__dirname, 'src/views'));
  * Routes
  */
 
+// Home page
 app.get('/', async (req, res) => {
     const title = 'Home';
     res.render('home', { title });
 });
 
+// Organizations page
 app.get('/organizations', async (req, res) => {
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title });
+    try {
+        const organizations = await getAllOrganizations();
+
+        console.log(organizations);
+
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title });
+    } catch (error) {
+        console.error('Error retrieving organizations:', error);
+        res.status(500).send('An error occurred while retrieving organizations.');
+    }
 });
 
+// Projects page
 app.get('/projects', async (req, res) => {
     const title = 'Service Projects';
     res.render('projects', { title });
 });
 
-// Categories route
+// Categories page
 app.get('/categories', async (req, res) => {
     const title = 'Service Project Categories';
     res.render('categories', { title });
 });
 
-// Start the server and test the database connection
+/**
+ * Start the server and test the database connection
+ */
+
 app.listen(PORT, async () => {
     try {
         await testConnection();
