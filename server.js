@@ -1,4 +1,3 @@
-
 import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
@@ -42,14 +41,13 @@ app.get('/', async (req, res) => {
 });
 
 // Organizations page
-
 app.get('/organizations', async (req, res) => {
     try {
         const organizations = await getAllOrganizations();
 
-        console.log(organizations);
+        console.log('organizations:', organizations);
 
-        const title = 'Our Partner Organizations';
+        const title = 'Organizations';
 
         res.render('organizations', { title, organizations });
     } catch (error) {
@@ -57,7 +55,6 @@ app.get('/organizations', async (req, res) => {
         res.status(500).send('An error occurred while retrieving organizations.');
     }
 });
-
 
 // Projects page
 app.get('/projects', async (req, res) => {
