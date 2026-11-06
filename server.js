@@ -3,6 +3,8 @@ import path from 'path';
 import express from 'express';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
+
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -57,15 +59,21 @@ app.get('/organizations', async (req, res) => {
 });
 
 // Projects page
-app.get('/projects', async (req, res) => {
-    const title = 'Service Projects';
-    res.render('projects', { title });
-});
 
-// Categories page
-app.get('/categories', async (req, res) => {
-    const title = 'Service Project Categories';
-    res.render('categories', { title });
+app.get('/projects', async (req, res) => {
+    try {
+        const projects = await getAllProjects();
+
+        // Display the projects in the terminal to verify the database query.
+        console.log('Projects retrieved:', projects);
+
+        const title = 'Service Projects';
+
+        res.render('projects', { title, projects });
+    } catch (error) {
+        console.error('Error retrieving projects:', error);
+        res.status(500).send('An error occurred while retrieving service projects.');
+    }
 });
 
 /**
