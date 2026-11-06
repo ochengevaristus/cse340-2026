@@ -59,6 +59,7 @@ app.get('/organizations', async (req, res) => {
 });
 
 // Projects page
+// Projects page
 app.get('/projects', async (req, res) => {
     try {
         const projects = await getAllProjects();
@@ -73,7 +74,6 @@ app.get('/projects', async (req, res) => {
         res.status(500).send('An error occurred while retrieving service projects.');
     }
 });
-
 // Categories page
 app.get('/categories', (req, res) => {
     const title = 'Categories';
