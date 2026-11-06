@@ -1,3 +1,4 @@
+
 import dns from 'node:dns';
 import { Pool } from 'pg';
 
@@ -5,12 +6,17 @@ dns.setDefaultResultOrder('ipv4first');
 
 const pool = new Pool({
     connectionString: process.env.DB_URL,
-    ssl: true
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 let db = null;
 
-if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
+if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.ENABLE_SQL_LOGGING === 'true'
+) {
     db = {
         async query(text, params) {
             try {
@@ -30,6 +36,7 @@ if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING ===
                     text: text.replace(/\s+/g, ' ').trim(),
                     error: error.message
                 });
+
                 throw error;
             }
         },
@@ -45,7 +52,12 @@ if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING ===
 const testConnection = async () => {
     try {
         const result = await db.query('SELECT NOW() as current_time');
-        console.log('Database connection successful:', result.rows[0].current_time);
+
+        console.log(
+            'Database connection successful:',
+            result.rows[0].current_time
+        );
+
         return true;
     } catch (error) {
         console.error('Database connection failed:', error.message);
