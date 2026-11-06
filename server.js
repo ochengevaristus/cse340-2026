@@ -1,10 +1,10 @@
+
 import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
 import { getAllProjects } from './src/models/projects.js';
-
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -37,7 +37,7 @@ app.set('views', path.join(__dirname, 'src/views'));
  */
 
 // Home page
-app.get('/', async (req, res) => {
+app.get('/', (req, res) => {
     const title = 'Home';
     res.render('home', { title });
 });
@@ -59,12 +59,10 @@ app.get('/organizations', async (req, res) => {
 });
 
 // Projects page
-
 app.get('/projects', async (req, res) => {
     try {
         const projects = await getAllProjects();
 
-        // Display the projects in the terminal to verify the database query.
         console.log('Projects retrieved:', projects);
 
         const title = 'Service Projects';
@@ -74,6 +72,12 @@ app.get('/projects', async (req, res) => {
         console.error('Error retrieving projects:', error);
         res.status(500).send('An error occurred while retrieving service projects.');
     }
+});
+
+// Categories page
+app.get('/categories', (req, res) => {
+    const title = 'Categories';
+    res.render('categories', { title });
 });
 
 /**
