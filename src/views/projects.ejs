@@ -1,4 +1,3 @@
-
 <%- include('partials/header') %>
 
 <main>
@@ -6,20 +5,24 @@
 
     <h2>Upcoming Service Projects</h2>
 
-    <ul>
-        <% projects.forEach(project => { %>
-            <li>
-                <%= new Date(project.date).toLocaleDateString('en-KE', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    timeZone: 'UTC'
-                }) %>:
-                <%= project.title %>
-                (<em><%= project.organization_name %></em>)
-            </li>
-        <% }); %>
-    </ul>
+    <% if (projects.length > 0) { %>
+        <ul>
+            <% projects.forEach(project => { %>
+                <li>
+                    <%= new Date(project.date).toLocaleDateString('en-KE', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        timeZone: 'UTC'
+                    }) %>:
+                    <%= project.title %>
+                    (<em><%= project.organization_name %></em>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No service projects are available yet. Please check again later.</p>
+    <% } %>
 </main>
 
 <%- include('partials/footer') %>
