@@ -1,19 +1,19 @@
 
 import { Pool } from 'pg';
 
-// Read the Render database connection details from .env
+if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is missing from environment variables.');
+}
+
 const databaseUrl = new URL(process.env.DATABASE_URL);
 
-// Create a connection pool
 const pool = new Pool({
-    // Use the IPv4 address that passed our connection test
-    host: '35.227.164.209',
+    host: databaseUrl.hostname,
     port: Number(databaseUrl.port) || 5432,
-    database: databaseUrl.pathname.slice(1),
+    database: decodeURIComponent(databaseUrl.pathname.slice(1)),
     user: decodeURIComponent(databaseUrl.username),
     password: decodeURIComponent(databaseUrl.password),
 
-    // Render requires the original hostname for TLS SNI
     ssl: {
         rejectUnauthorized: false,
         servername: databaseUrl.hostname
@@ -22,7 +22,6 @@ const pool = new Pool({
     connectionTimeoutMillis: 15000
 });
 
-// Enable SQL query logging during development when requested
 let db;
 
 if (
@@ -53,7 +52,7 @@ if (
             }
         },
 
-        async close() {
+        async end() {
             await pool.end();
         }
     };
@@ -61,7 +60,6 @@ if (
     db = pool;
 }
 
-// Test the database connection
 const testConnection = async () => {
     try {
         const result = await db.query(
@@ -75,11 +73,7 @@ const testConnection = async () => {
 
         return true;
     } catch (error) {
-        console.error(
-            'Database connection failed:',
-            error.message
-        );
-
+        console.error('Database connection failed:', error);
         throw error;
     }
 };
