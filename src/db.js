@@ -2,7 +2,7 @@
 import { Pool } from 'pg';
 
 if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is missing from environment variables.');
+    throw new Error('DATABASE_URL is not defined in the environment variables.');
 }
 
 const databaseUrl = new URL(process.env.DATABASE_URL);
@@ -13,12 +13,10 @@ const pool = new Pool({
     database: decodeURIComponent(databaseUrl.pathname.slice(1)),
     user: decodeURIComponent(databaseUrl.username),
     password: decodeURIComponent(databaseUrl.password),
-
     ssl: {
         rejectUnauthorized: false,
         servername: databaseUrl.hostname
     },
-
     connectionTimeoutMillis: 15000
 });
 
@@ -52,7 +50,7 @@ if (
             }
         },
 
-        async end() {
+        async close() {
             await pool.end();
         }
     };
@@ -62,9 +60,7 @@ if (
 
 const testConnection = async () => {
     try {
-        const result = await db.query(
-            'SELECT NOW() AS current_time'
-        );
+        const result = await db.query('SELECT NOW() AS current_time');
 
         console.log(
             'Database connection successful:',
@@ -73,7 +69,7 @@ const testConnection = async () => {
 
         return true;
     } catch (error) {
-        console.error('Database connection failed:', error);
+        console.error('Database connection failed:', error.message);
         throw error;
     }
 };
