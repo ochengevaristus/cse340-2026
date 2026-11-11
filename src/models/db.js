@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 const databaseUrl = new URL(process.env.DATABASE_URL);
 
 const pool = new Pool({
-    host: '35.227.164.209',
+    host: databaseUrl.hostname,
     port: Number(databaseUrl.port) || 5432,
     database: databaseUrl.pathname.slice(1),
     user: decodeURIComponent(databaseUrl.username),
