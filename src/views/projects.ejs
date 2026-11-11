@@ -1,3 +1,4 @@
+
 <%- include('partials/header') %>
 
 <main>
@@ -6,20 +7,53 @@
     <h2>Upcoming Service Projects</h2>
 
     <% if (projects.length > 0) { %>
-        <ul>
+        <div class="projects-list">
             <% projects.forEach(project => { %>
-                <li>
-                    <%= new Date(project.date).toLocaleDateString('en-KE', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        timeZone: 'UTC'
-                    }) %>:
-                    <%= project.title %>
-                    (<em><%= project.organization_name %></em>)
-                </li>
+                <article class="project-card">
+                    <h3><%= project.title %></h3>
+
+                    <p><%= project.description %></p>
+
+                    <p>
+                        <strong>Organization:</strong>
+                        <%= project.organization_name %>
+                    </p>
+
+                    <p>
+                        <strong>Location:</strong>
+                        <%= project.location || 'Location not provided' %>
+                    </p>
+
+                    <p>
+                        <strong>Date:</strong>
+                        <% if (project.date) { %>
+                            <%= new Date(project.date).toLocaleDateString('en-KE', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            }) %>
+                        <% } else { %>
+                            Date not provided
+                        <% } %>
+                    </p>
+
+                    <div>
+                        <strong>Categories:</strong>
+
+                        <% if (project.categories && project.categories.length > 0) { %>
+                            <ul>
+                                <% project.categories.forEach(category => { %>
+                                    <li><%= category %></li>
+                                <% }); %>
+                            </ul>
+                        <% } else { %>
+                            <p>No categories assigned.</p>
+                        <% } %>
+                    </div>
+                </article>
             <% }); %>
-        </ul>
+        </div>
     <% } else { %>
         <p>No service projects are available yet. Please check again later.</p>
     <% } %>

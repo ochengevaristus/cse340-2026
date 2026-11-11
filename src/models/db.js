@@ -1,17 +1,22 @@
 
-import dns from 'node:dns';
 import { Pool } from 'pg';
 
-dns.setDefaultResultOrder('ipv4first');
+const databaseUrl = new URL(process.env.DATABASE_URL);
 
 const pool = new Pool({
-    connectionString: process.env.DB_URL,
+    host: '35.227.164.209',
+    port: Number(databaseUrl.port) || 5432,
+    database: databaseUrl.pathname.slice(1),
+    user: decodeURIComponent(databaseUrl.username),
+    password: decodeURIComponent(databaseUrl.password),
     ssl: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+        servername: databaseUrl.hostname
+    },
+    connectionTimeoutMillis: 15000
 });
 
-let db = null;
+let db;
 
 if (
     process.env.NODE_ENV === 'development' &&
@@ -21,16 +26,16 @@ if (
         async query(text, params) {
             try {
                 const start = Date.now();
-                const res = await pool.query(text, params);
+                const result = await pool.query(text, params);
                 const duration = Date.now() - start;
 
                 console.log('Executed query:', {
                     text: text.replace(/\s+/g, ' ').trim(),
                     duration: `${duration}ms`,
-                    rows: res.rowCount
+                    rows: result.rowCount
                 });
 
-                return res;
+                return result;
             } catch (error) {
                 console.error('Error in query:', {
                     text: text.replace(/\s+/g, ' ').trim(),
@@ -51,7 +56,9 @@ if (
 
 const testConnection = async () => {
     try {
-        const result = await db.query('SELECT NOW() as current_time');
+        const result = await db.query(
+            'SELECT NOW() AS current_time'
+        );
 
         console.log(
             'Database connection successful:',
@@ -60,7 +67,7 @@ const testConnection = async () => {
 
         return true;
     } catch (error) {
-        console.error('Database connection failed:', error.message);
+        console.error('Database connection failed:', error);
         throw error;
     }
 };

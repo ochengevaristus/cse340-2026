@@ -8,12 +8,23 @@
 
     <p>Explore our different categories of service opportunities:</p>
 
-    <ul>
-        <li>Environmental</li>
-        <li>Educational</li>
-        <li>Community Service</li>
-        <li>Health and Wellness</li>
-    </ul>
+    <% if (categories.length > 0) { %>
+        <div class="categories-list">
+            <% categories.forEach(category => { %>
+                <article class="category-card">
+                    <h3><%= category.name %></h3>
+
+                    <% if (category.description) { %>
+                        <p><%= category.description %></p>
+                    <% } else { %>
+                        <p>No description available.</p>
+                    <% } %>
+                </article>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p>No service categories are available yet.</p>
+    <% } %>
 </main>
 
 <%- include('partials/footer') %>
