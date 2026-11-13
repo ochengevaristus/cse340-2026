@@ -4,9 +4,7 @@ import path from 'path';
 import express from 'express';
 
 import { testConnection } from './src/models/db.js';
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+import router from './src/routes.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -22,8 +20,20 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 /**
- * Configure Express middleware
+ * Configure middleware
  */
+
+// Log incoming requests
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.originalUrl}`);
+    next();
+});
+
+// Make the environment available to EJS views
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -35,93 +45,49 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
 /**
- * Routes
+ * Application routes
  */
 
-// Home page
-app.get('/', (req, res) => {
-    res.render('home', {
-        title: 'Home'
+// Connect the application routes
+app.use(router);
+
+// Route for testing the global error handler
+app.get('/test-error', (req, res, next) => {
+    next(new Error('This is a test error.'));
+});
+
+/**
+ * 404 Not Found handler
+ * This must come after all application routes.
+ */
+app.use((req, res, next) => {
+    res.status(404).render('errors/404', {
+        title: 'Page Not Found'
     });
 });
 
-// Organizations page
-app.get('/organizations', async (req, res) => {
-    try {
-        const organizations = await getAllOrganizations();
+/**
+ * Global error handler
+ * This must come after the 404 handler.
+ */
+app.use((error, req, res, next) => {
+    console.error('APPLICATION ERROR:', error.stack || error);
 
-        console.log('Organizations retrieved:', organizations.length);
-
-        res.render('organizations', {
-            title: 'Organizations',
-            organizations
-        });
-    } catch (error) {
-        console.error(
-            'ORGANIZATIONS PAGE ERROR:',
-            error.stack || error
-        );
-
-        res.status(500).send(
-            'Unable to display organizations.'
-        );
+    if (res.headersSent) {
+        return next(error);
     }
-});
 
-// Projects page
-app.get('/projects', async (req, res) => {
-    try {
-        const projects = await getAllProjects();
-
-        console.log('Projects retrieved:', projects.length);
-
-        res.render('projects', {
-            title: 'Service Projects',
-            projects
-        });
-    } catch (error) {
-        console.error(
-            'PROJECTS PAGE ERROR:',
-            error.stack || error
-        );
-
-        res.status(500).send(
-            'Unable to display service projects.'
-        );
-    }
-});
-
-// Categories page
-app.get('/categories', async (req, res) => {
-    try {
-        const categories = await getAllCategories();
-
-        console.log('Categories retrieved:', categories.length);
-
-        res.render('categories', {
-            title: 'Categories',
-            categories
-        });
-    } catch (error) {
-        console.error(
-            'CATEGORIES PAGE ERROR:',
-            error.stack || error
-        );
-
-        res.status(500).send(
-            'Unable to display categories.'
-        );
-    }
+    res.status(500).render('errors/500', {
+        title: 'Server Error',
+        message: NODE_ENV === 'development'
+            ? error.message
+            : 'Something went wrong. Please try again later.'
+    });
 });
 
 /**
  * Start the server and test the database connection
  */
-
-/**
- * Start the server and test the database connection
- */
-
 const server = app.listen(PORT, () => {
     console.log(`Server is running at http://127.0.0.1:${PORT}`);
     console.log(`Environment: ${NODE_ENV}`);

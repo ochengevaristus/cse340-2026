@@ -1,0 +1,53 @@
+
+<%- include('partials/header') %>
+
+<main class="container">
+    <h1><%= organization.name %></h1>
+
+    <% if (organization.logo_filename) { %>
+        <img
+            src="/images/<%= organization.logo_filename %>"
+            alt="<%= organization.name %> logo"
+        >
+    <% } %>
+
+    <section>
+        <h2>About the Organization</h2>
+        <p><%= organization.description %></p>
+        <p>
+            <strong>Contact Email:</strong>
+            <%= organization.contact_email %>
+        </p>
+    </section>
+
+    <section>
+        <h2>Projects by <%= organization.name %></h2>
+
+        <% if (projects.length > 0) { %>
+            <ul>
+                <% projects.forEach(project => { %>
+                    <li>
+                        <h3>
+                            <a href="/project/<%= project.project_id %>">
+                                <%= project.title %>
+                            </a>
+                        </h3>
+
+                        <p><%= project.description %></p>
+                        <p><strong>Location:</strong> <%= project.location %></p>
+                        <p>
+                            <strong>Date:</strong>
+                            <%= new Date(project.date).toLocaleDateString() %>
+                        </p>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>This organization has no projects listed at the moment.</p>
+        <% } %>
+    </section>
+
+    <p><a href="/organizations">Back to Organizations</a></p>
+</main>
+
+<%- include('partials/footer') %>

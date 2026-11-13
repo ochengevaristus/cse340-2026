@@ -10,13 +10,19 @@
         <div class="projects-list">
             <% projects.forEach(project => { %>
                 <article class="project-card">
-                    <h3><%= project.title %></h3>
+                    <h3>
+                        <a href="/project/<%= project.project_id %>">
+                            <%= project.title %>
+                        </a>
+                    </h3>
 
                     <p><%= project.description %></p>
 
                     <p>
                         <strong>Organization:</strong>
-                        <%= project.organization_name %>
+                        <a href="/organization/<%= project.organization_id %>">
+                            <%= project.organization_name %>
+                        </a>
                     </p>
 
                     <p>
@@ -44,13 +50,25 @@
                         <% if (project.categories && project.categories.length > 0) { %>
                             <ul>
                                 <% project.categories.forEach(category => { %>
-                                    <li><%= category %></li>
+                                    <li>
+                                        <% if (category.category_id) { %>
+                                            <a href="/category/<%= category.category_id %>">
+                                                <%= category.name %>
+                                            </a>
+                                        <% } else { %>
+                                            <%= category.name || category %>
+                                        <% } %>
+                                    </li>
                                 <% }); %>
                             </ul>
                         <% } else { %>
                             <p>No categories assigned.</p>
                         <% } %>
                     </div>
+
+                    <a href="/project/<%= project.project_id %>">
+                        View Project Details
+                    </a>
                 </article>
             <% }); %>
         </div>

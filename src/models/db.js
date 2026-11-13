@@ -1,19 +1,33 @@
 
 import { Pool } from 'pg';
+import { lookup } from 'node:dns/promises';
+
+if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not defined in the environment variables.');
+}
 
 const databaseUrl = new URL(process.env.DATABASE_URL);
 
+// Resolve the Render hostname to IPv4.
+const { address: databaseHost } = await lookup(
+    databaseUrl.hostname,
+    { family: 4 }
+);
+
+console.log('Database IPv4 address resolved:', databaseHost);
+
 const pool = new Pool({
-    host: databaseUrl.hostname,
+    host: databaseHost,
     port: Number(databaseUrl.port) || 5432,
-    database: databaseUrl.pathname.slice(1),
+    database: decodeURIComponent(databaseUrl.pathname.slice(1)),
     user: decodeURIComponent(databaseUrl.username),
     password: decodeURIComponent(databaseUrl.password),
     ssl: {
         rejectUnauthorized: false,
         servername: databaseUrl.hostname
     },
-    connectionTimeoutMillis: 15000
+    connectionTimeoutMillis: 15000,
+    family: 4
 });
 
 let db;
