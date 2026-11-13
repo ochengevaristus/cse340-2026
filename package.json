@@ -17,7 +17,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec \"node --dns-result-order=ipv4first --env-file=.env\" server.js",
-    "start": "node --dns-result-order=ipv4first --env-file=.env server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "ejs": "^7.0.2",
