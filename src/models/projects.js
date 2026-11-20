@@ -1,6 +1,7 @@
 
 import db from './db.js';
 
+// Get all projects
 const getAllProjects = async () => {
     const query = `
         SELECT
@@ -36,6 +37,7 @@ const getAllProjects = async () => {
     return result.rows;
 };
 
+// Get upcoming projects
 const getUpcomingProjects = async (numberOfProjects) => {
     const query = `
         SELECT
@@ -74,6 +76,7 @@ const getUpcomingProjects = async (numberOfProjects) => {
     return result.rows;
 };
 
+// Get project details
 const getProjectDetails = async (projectId) => {
     const query = `
         SELECT
@@ -109,6 +112,7 @@ const getProjectDetails = async (projectId) => {
     return result.rows[0];
 };
 
+// Get categories assigned to a project
 const getCategoriesByProjectId = async (projectId) => {
     const query = `
         SELECT
@@ -126,6 +130,7 @@ const getCategoriesByProjectId = async (projectId) => {
     return result.rows;
 };
 
+// Get projects belonging to a category
 const getProjectsByCategoryId = async (categoryId) => {
     const query = `
         SELECT
@@ -149,6 +154,7 @@ const getProjectsByCategoryId = async (categoryId) => {
     return result.rows;
 };
 
+// Get projects belonging to an organization
 const getProjectsByOrganizationId = async (organizationId) => {
     const query = `
         SELECT
@@ -167,11 +173,77 @@ const getProjectsByOrganizationId = async (organizationId) => {
     return result.rows;
 };
 
+// Create a new project
+const createProject = async (
+    title,
+    description,
+    location,
+    date,
+    organizationId
+) => {
+    const query = `
+        INSERT INTO public.projects (
+            title,
+            description,
+            location,
+            date,
+            organization_id
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING project_id;
+    `;
+
+    const result = await db.query(query, [
+        title,
+        description,
+        location || null,
+        date,
+        organizationId
+    ]);
+
+    return result.rows[0].project_id;
+};
+
+// Update an existing project
+const updateProject = async (
+    projectId,
+    title,
+    description,
+    location,
+    date,
+    organizationId
+) => {
+    const query = `
+        UPDATE public.projects
+        SET
+            title = $1,
+            description = $2,
+            location = $3,
+            date = $4,
+            organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+
+    const result = await db.query(query, [
+        title,
+        description,
+        location || null,
+        date,
+        organizationId,
+        projectId
+    ]);
+
+    return result.rows[0];
+};
+
 export {
     getAllProjects,
     getUpcomingProjects,
     getProjectDetails,
     getCategoriesByProjectId,
     getProjectsByCategoryId,
-    getProjectsByOrganizationId
+    getProjectsByOrganizationId,
+    createProject,
+    updateProject
 };

@@ -2,12 +2,13 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
+import session from 'express-session';
 
 import { testConnection } from './src/models/db.js';
 import router from './src/routes.js';
 
 // Define the application environment
-const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'development';
 
 // Define the port number
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,11 @@ const __dirname = path.dirname(__filename);
 // Initialize Express application
 const app = express();
 
+// Trust the Render proxy when running in production
+if (NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 /**
  * Configure middleware
  */
@@ -26,6 +32,58 @@ const app = express();
 // Log incoming requests
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.originalUrl}`);
+    next();
+});
+
+// Parse submitted form data
+app.use(express.urlencoded({ extended: true }));
+
+// Parse JSON request data
+app.use(express.json());
+
+// Configure sessions
+if (!process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET is not defined in the environment variables.');
+}
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+
+// Configure flash messages
+app.use((req, res, next) => {
+    req.flash = (type, message) => {
+        if (!req.session.flashMessages) {
+            req.session.flashMessages = {};
+        }
+
+        if (message === undefined) {
+            const messages = req.session.flashMessages[type] || [];
+            delete req.session.flashMessages[type];
+            return messages;
+        }
+
+        if (!req.session.flashMessages[type]) {
+            req.session.flashMessages[type] = [];
+        }
+
+        const newMessages = Array.isArray(message) ? message : [message];
+
+        req.session.flashMessages[type].push(...newMessages);
+    };
+
+    res.locals.flashMessages = {
+        success: req.flash('success'),
+        error: req.flash('error')
+    };
+
     next();
 });
 
@@ -58,7 +116,6 @@ app.get('/test-error', (req, res, next) => {
 
 /**
  * 404 Not Found handler
- * This must come after all application routes.
  */
 app.use((req, res, next) => {
     res.status(404).render('errors/404', {
@@ -68,7 +125,6 @@ app.use((req, res, next) => {
 
 /**
  * Global error handler
- * This must come after the 404 handler.
  */
 app.use((error, req, res, next) => {
     console.error('APPLICATION ERROR:', error.stack || error);

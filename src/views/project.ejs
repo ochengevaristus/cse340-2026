@@ -4,6 +4,16 @@
 <main class="container">
     <h1><%= project.title %></h1>
 
+    <p>
+        <a class="button" href="/edit-project/<%= project.project_id %>">
+            Edit Project
+        </a>
+
+        <a class="button" href="/assign-categories/<%= project.project_id %>">
+            Assign Categories
+        </a>
+    </p>
+
     <section>
         <h2>Project Details</h2>
 
@@ -16,11 +26,23 @@
             </a>
         </p>
 
-        <p><strong>Location:</strong> <%= project.location %></p>
+        <p>
+            <strong>Location:</strong>
+            <%= project.location || 'Location not provided' %>
+        </p>
 
         <p>
             <strong>Date:</strong>
-            <%= new Date(project.date).toLocaleDateString() %>
+            <% if (project.date) { %>
+                <%= new Date(project.date).toLocaleDateString('en-KE', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    timeZone: 'UTC'
+                }) %>
+            <% } else { %>
+                Date not provided
+            <% } %>
         </p>
     </section>
 

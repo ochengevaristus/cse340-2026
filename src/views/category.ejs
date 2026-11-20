@@ -4,9 +4,15 @@
 <main class="container">
     <h1><%= category.name %></h1>
 
+    <p>
+        <a class="button" href="/edit-category/<%= category.category_id %>">
+            Edit Category
+        </a>
+    </p>
+
     <section>
         <h2>Category Description</h2>
-        <p><%= category.description %></p>
+        <p><%= category.description || 'No description available.' %></p>
     </section>
 
     <section>
@@ -31,11 +37,23 @@
                             </a>
                         </p>
 
-                        <p><strong>Location:</strong> <%= project.location %></p>
+                        <p>
+                            <strong>Location:</strong>
+                            <%= project.location || 'Not provided' %>
+                        </p>
 
                         <p>
                             <strong>Date:</strong>
-                            <%= new Date(project.date).toLocaleDateString() %>
+                            <% if (project.date) { %>
+                                <%= new Date(project.date).toLocaleDateString('en-KE', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                    timeZone: 'UTC'
+                                }) %>
+                            <% } else { %>
+                                Date not provided
+                            <% } %>
                         </p>
                     </li>
                 <% }); %>

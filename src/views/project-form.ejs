@@ -1,0 +1,68 @@
+
+<%- include('partials/header') %>
+
+<main class="container">
+    <h1><%= heading %></h1>
+
+    <form action="<%= action %>" method="POST">
+
+        <label for="title">Project Title:</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            value="<%= project.title || '' %>"
+            minlength="3"
+            maxlength="150"
+            required
+        >
+
+        <label for="description">Project Description:</label>
+        <textarea
+            id="description"
+            name="description"
+            maxlength="1000"
+            required
+        ><%= project.description || '' %></textarea>
+
+        <label for="location">Location:</label>
+        <input
+            type="text"
+            id="location"
+            name="location"
+            value="<%= project.location || '' %>"
+            maxlength="255"
+        >
+
+        <label for="date">Project Date:</label>
+        <input
+            type="date"
+            id="date"
+            name="date"
+            value="<%= project.date ? new Date(project.date).toISOString().slice(0, 10) : '' %>"
+            required
+        >
+
+        <label for="organizationId">Organization:</label>
+        <select id="organizationId" name="organizationId" required>
+            <option value="">Select an organization</option>
+
+            <% organizations.forEach(organization => { %>
+                <option
+                    value="<%= organization.organization_id %>"
+                    <%= String(project.organization_id || '') === String(organization.organization_id) ? 'selected' : '' %>
+                >
+                    <%= organization.name %>
+                </option>
+            <% }); %>
+        </select>
+
+        <button type="submit">
+            <%= project.project_id ? 'Update Project' : 'Create Project' %>
+        </button>
+
+        <a href="/projects">Cancel</a>
+    </form>
+</main>
+
+<%- include('partials/footer') %>

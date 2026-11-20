@@ -1,0 +1,28 @@
+
+<%- include('partials/header') %>
+
+<main class="container">
+    <h1><%= heading %></h1>
+
+    <form action="<%= action %>" method="POST">
+
+        <label for="name">Category Name:</label>
+        <input
+            type="text"
+            id="name"
+            name="name"
+            value="<%= category.name || '' %>"
+            minlength="3"
+            maxlength="100"
+            required
+        >
+
+        <button type="submit">
+            <%= category.category_id ? 'Update Category' : 'Create Category' %>
+        </button>
+
+        <a href="/categories">Cancel</a>
+    </form>
+</main>
+
+<%- include('partials/footer') %>
