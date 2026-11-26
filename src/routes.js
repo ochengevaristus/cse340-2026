@@ -41,6 +41,7 @@ import {
     requireLogin,
     requireRole,
     showDashboard,
+    showUsersPage,
     processLogout
 } from './controllers/users.js';
 
@@ -77,6 +78,13 @@ router.get(
     '/dashboard',
     requireLogin,
     showDashboard
+);
+
+// Registered users page - administrators only
+router.get(
+    '/users',
+    requireAdmin,
+    showUsersPage
 );
 
 // User logout

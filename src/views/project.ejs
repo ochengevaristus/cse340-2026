@@ -4,15 +4,17 @@
 <main class="container">
     <h1><%= project.title %></h1>
 
-    <p>
-        <a class="button" href="/edit-project/<%= project.project_id %>">
-            Edit Project
-        </a>
+    <% if (isLoggedIn && user.role_name === 'admin') { %>
+        <p>
+            <a class="button" href="/edit-project/<%= project.project_id %>">
+                Edit Project
+            </a>
 
-        <a class="button" href="/assign-categories/<%= project.project_id %>">
-            Assign Categories
-        </a>
-    </p>
+            <a class="button" href="/assign-categories/<%= project.project_id %>">
+                Assign Categories
+            </a>
+        </p>
+    <% } %>
 
     <section>
         <h2>Project Details</h2>

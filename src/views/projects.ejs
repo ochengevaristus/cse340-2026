@@ -4,11 +4,13 @@
 <main>
     <h1><%= title %></h1>
 
-    <p>
-        <a class="button" href="/new-project">
-            Add New Project
-        </a>
-    </p>
+    <% if (isLoggedIn && user.role_name === 'admin') { %>
+        <p>
+            <a class="button" href="/new-project">
+                Add New Project
+            </a>
+        </p>
+    <% } %>
 
     <h2>Upcoming Service Projects</h2>
 

@@ -1,0 +1,40 @@
+
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+
+    <p>View all registered users and their account roles.</p>
+
+    <% if (users.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.user_id %></td>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.role_name %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No registered users were found.</p>
+    <% } %>
+
+    <p>
+        <a href="/dashboard">Return to Dashboard</a>
+    </p>
+</main>
+
+<%- include('partials/footer') %>

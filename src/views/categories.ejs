@@ -8,11 +8,13 @@
 
     <p>Explore our different categories of service opportunities:</p>
 
-    <p>
-        <a class="button" href="/new-category">
-            Add New Category
-        </a>
-    </p>
+    <% if (isLoggedIn && user.role_name === 'admin') { %>
+        <p>
+            <a class="button" href="/new-category">
+                Add New Category
+            </a>
+        </p>
+    <% } %>
 
     <% if (categories.length > 0) { %>
         <div class="categories-list">
@@ -32,11 +34,13 @@
                         </a>
                     </p>
 
-                    <p>
-                        <a href="/edit-category/<%= category.category_id %>">
-                            Edit Category
-                        </a>
-                    </p>
+                    <% if (isLoggedIn && user.role_name === 'admin') { %>
+                        <p>
+                            <a href="/edit-category/<%= category.category_id %>">
+                                Edit Category
+                            </a>
+                        </p>
+                    <% } %>
                 </article>
             <% }); %>
         </div>

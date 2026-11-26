@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 
 import {
     createUser,
-    authenticateUser
+    authenticateUser,
+    getAllUsers
 } from '../models/users.js';
 
 // Registration form validation
@@ -170,6 +171,20 @@ const showDashboard = (req, res) => {
     });
 };
 
+// Display all registered users
+const showUsersPage = async (req, res, next) => {
+    try {
+        const users = await getAllUsers();
+
+        res.render('users', {
+            title: 'Registered Users',
+            users
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Log out the current user
 const processLogout = (req, res, next) => {
     req.session.destroy((error) => {
@@ -191,5 +206,6 @@ export {
     requireLogin,
     requireRole,
     showDashboard,
+    showUsersPage,
     processLogout
 };

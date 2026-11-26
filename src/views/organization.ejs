@@ -11,11 +11,13 @@
         >
     <% } %>
 
-    <p>
-        <a class="button" href="/edit-organization/<%= organization.organization_id %>">
-            Edit Organization
-        </a>
-    </p>
+    <% if (isLoggedIn && user.role_name === 'admin') { %>
+        <p>
+            <a class="button" href="/edit-organization/<%= organization.organization_id %>">
+                Edit Organization
+            </a>
+        </p>
+    <% } %>
 
     <section>
         <h2>About the Organization</h2>
