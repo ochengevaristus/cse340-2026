@@ -32,9 +32,24 @@ import {
     processEditCategoryForm
 } from './controllers/categories.js';
 
+import {
+    registrationValidation,
+    showUserRegistrationForm,
+    processUserRegistrationForm,
+    showLoginForm,
+    processLoginForm,
+    requireLogin,
+    requireRole,
+    showDashboard,
+    processLogout
+} from './controllers/users.js';
+
 import { getAllCategories } from './models/categories.js';
 
 const router = express.Router();
+
+// Administrator access middleware
+const requireAdmin = requireRole('admin');
 
 // Home page
 router.get('/', (req, res) => {
@@ -43,19 +58,53 @@ router.get('/', (req, res) => {
     });
 });
 
+// User registration
+router.get('/register', showUserRegistrationForm);
+
+router.post(
+    '/register',
+    registrationValidation,
+    processUserRegistrationForm
+);
+
+// User login
+router.get('/login', showLoginForm);
+
+router.post('/login', processLoginForm);
+
+// User dashboard
+router.get(
+    '/dashboard',
+    requireLogin,
+    showDashboard
+);
+
+// User logout
+router.get('/logout', processLogout);
+
 // Organizations
 router.get('/organizations', showOrganizationsPage);
 
-router.get('/new-organization', showNewOrganizationForm);
+// Only administrators can create organizations
+router.get('/new-organization', requireAdmin, showNewOrganizationForm);
+
 router.post(
     '/new-organization',
+    requireAdmin,
     organizationValidation,
     processNewOrganizationForm
 );
 
-router.get('/edit-organization/:id', showEditOrganizationForm);
+// Only administrators can edit organizations
+router.get(
+    '/edit-organization/:id',
+    requireAdmin,
+    showEditOrganizationForm
+);
+
 router.post(
     '/edit-organization/:id',
+    requireAdmin,
     organizationValidation,
     processEditOrganizationForm
 );
@@ -65,16 +114,26 @@ router.get('/organization/:id', showOrganizationDetailsPage);
 // Projects
 router.get('/projects', showProjectsPage);
 
-router.get('/new-project', showNewProjectForm);
+// Only administrators can create projects
+router.get('/new-project', requireAdmin, showNewProjectForm);
+
 router.post(
     '/new-project',
+    requireAdmin,
     projectValidation,
     processNewProjectForm
 );
 
-router.get('/edit-project/:id', showEditProjectForm);
+// Only administrators can edit projects
+router.get(
+    '/edit-project/:id',
+    requireAdmin,
+    showEditProjectForm
+);
+
 router.post(
     '/edit-project/:id',
+    requireAdmin,
     projectValidation,
     processEditProjectForm
 );
@@ -95,30 +154,42 @@ router.get('/categories', async (req, res, next) => {
     }
 });
 
-router.get('/new-category', showNewCategoryForm);
+// Only administrators can create categories
+router.get('/new-category', requireAdmin, showNewCategoryForm);
+
 router.post(
     '/new-category',
+    requireAdmin,
     categoryValidation,
     processNewCategoryForm
 );
 
-router.get('/edit-category/:id', showEditCategoryForm);
+// Only administrators can edit categories
+router.get(
+    '/edit-category/:id',
+    requireAdmin,
+    showEditCategoryForm
+);
+
 router.post(
     '/edit-category/:id',
+    requireAdmin,
     categoryValidation,
     processEditCategoryForm
 );
 
 router.get('/category/:id', showCategoryDetailsPage);
 
-// Assign categories to projects
+// Only administrators can assign categories to projects
 router.get(
     '/assign-categories/:projectId',
+    requireAdmin,
     showAssignCategoriesForm
 );
 
 router.post(
     '/assign-categories/:projectId',
+    requireAdmin,
     processAssignCategoriesForm
 );
 

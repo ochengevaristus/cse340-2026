@@ -1,15 +1,19 @@
 
 -- =============================================
--- CSE 340 W02: Database Retrieval
+-- CSE 340 W02-W05: Database Setup
 -- Community Service Projects Database
 -- =============================================
 
 BEGIN;
 
 -- IMPORTANT:
--- This script resets these four tables.
+-- This script resets the organization, project,
+-- category, and project_category tables.
 -- Run it ONLY on a fresh or disposable database.
 -- Do not run it on your existing Render database.
+--
+-- Authentication tables are also created below.
+-- Do not use this script to reset your live database.
 
 DROP TABLE IF EXISTS public.project_category CASCADE;
 DROP TABLE IF EXISTS public.projects CASCADE;
@@ -83,7 +87,41 @@ CREATE TABLE public.project_category (
 
 
 -- =============================================
--- 5. INSERT ORGANIZATIONS
+-- 5. ROLES AND USERS TABLES
+-- Authentication and authorization
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS public.roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL,
+    role_description TEXT
+);
+
+-- Insert the default user roles.
+INSERT INTO public.roles (role_name, role_description)
+VALUES
+(
+    'user',
+    'Regular registered user'
+),
+(
+    'admin',
+    'Administrator with permission to manage the application'
+)
+ON CONFLICT (role_name) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS public.users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role_id INTEGER REFERENCES public.roles(role_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- =============================================
+-- 6. INSERT ORGANIZATIONS
 -- =============================================
 
 INSERT INTO public.organization
@@ -110,7 +148,7 @@ VALUES
 
 
 -- =============================================
--- 6. INSERT PROJECTS
+-- 7. INSERT PROJECTS
 -- Five projects for each organization
 -- =============================================
 
@@ -235,7 +273,7 @@ JOIN (
 
 
 -- =============================================
--- 7. INSERT CATEGORIES
+-- 8. INSERT CATEGORIES
 -- =============================================
 
 INSERT INTO public.categories (name, description)
@@ -267,7 +305,7 @@ VALUES
 
 
 -- =============================================
--- 8. ASSIGN CATEGORIES TO EVERY PROJECT
+-- 9. ASSIGN CATEGORIES TO EVERY PROJECT
 -- Each project receives two categories.
 -- =============================================
 
@@ -329,7 +367,7 @@ JOIN public.categories c
 
 
 -- =============================================
--- 9. VERIFICATION QUERIES
+-- 10. VERIFICATION QUERIES
 -- =============================================
 
 -- Verify organizations
@@ -346,6 +384,21 @@ ORDER BY project_id;
 SELECT *
 FROM public.categories
 ORDER BY category_id;
+
+-- Verify roles
+SELECT *
+FROM public.roles
+ORDER BY role_id;
+
+-- Verify users
+SELECT
+    user_id,
+    name,
+    email,
+    role_id,
+    created_at
+FROM public.users
+ORDER BY user_id;
 
 -- Verify projects, organizations, and categories
 SELECT

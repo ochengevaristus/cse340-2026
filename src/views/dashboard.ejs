@@ -1,0 +1,26 @@
+
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+
+    <p>Welcome, <strong><%= user.name %></strong>!</p>
+
+    <p>You are successfully logged in.</p>
+
+    <section>
+        <h2>Account Information</h2>
+
+        <p><strong>Name:</strong> <%= user.name %></p>
+
+        <p><strong>Email:</strong> <%= user.email %></p>
+
+        <p><strong>Account Role:</strong> <%= user.role_name %></p>
+    </section>
+
+    <p>
+        <a href="/">Return to Home Page</a>
+    </p>
+</main>
+
+<%- include('partials/footer') %>

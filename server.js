@@ -87,9 +87,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// Make the environment available to EJS views
+// Make the environment and logged-in user available to EJS views
 app.use((req, res, next) => {
     res.locals.NODE_ENV = NODE_ENV;
+    res.locals.user = req.session.user || null;
+    res.locals.isLoggedIn = Boolean(req.session.user);
+
     next();
 });
 
